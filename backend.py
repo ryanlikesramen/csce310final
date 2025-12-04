@@ -8,10 +8,10 @@ app = Flask(__name__)
 
 # database config
 db_config = {
-    'user': 'root',
+    'user': 'bookstore_admin',
     'password': '1234',
     'host': 'localhost',
-    'database': 'your_database_name'
+    'database': 'bookstore_db'
 }
 
 def get_db_connection():
@@ -46,11 +46,11 @@ def login():
     data = request.json
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERRE username = %s", (data['username'],))
+    cursor.execute("SELECT * FROM users WHERE username = %s", (data['username'],))
     user = cursor.fetchone()
     conn.close()
     
-    if user and brcypt.checkpw(data['password'].encode('utf-8'), user['password_hash'].encode('utf-8')):
+    if user and bcrypt.checkpw(data['password'].encode('utf-8'), user['password_hash'].encode('utf-8')):
         return jsonify({"message": "Login successful", "user_id": user['id'], "role": user['role']}), 200
     else:
         return jsonify({"message": "Invalid credentials"}), 401
